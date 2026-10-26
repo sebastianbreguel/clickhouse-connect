@@ -74,6 +74,16 @@ def test_numpy_object_type(param_client: Client, call, table_context: Callable):
         assert np.array_equal(source_arr, np_array)
 
 
+def test_numpy_object_columns_keep_row_shape(param_client: Client, call):
+    np_array = call(param_client.query_np, "SELECT [number, number + 1, number + 2] AS v FROM numbers(2)")
+    assert np_array.shape == (2, 1)
+    assert np_array.tolist() == [[[0, 1, 2]], [[1, 2, 3]]]
+
+    np_array = call(param_client.query_np, "SELECT (number, number + 1) AS t, [number] AS v FROM numbers(2)")
+    assert np_array.shape == (2, 2)
+    assert np_array.tolist() == [[(0, 1), [0]], [(1, 2), [1]]]
+
+
 def test_numpy_nulls(param_client: Client, call, table_context: Callable):
     np_types = [(col_name, "O") for col_name in null_ds_columns]
     np_array = np.rec.fromrecords(null_ds, dtype=np_types)

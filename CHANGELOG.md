@@ -14,6 +14,7 @@ This changelog covers the `clickhouse-connect` driver. The independently version
 - The Python codec now inserts `None` into `Nullable(SimpleAggregateFunction(...))` columns as NULL.
 - Tuple serialization now reports non-sequence rows with `DataError` and a row number instead of a raw `TypeError` or `AttributeError`, including `None` rows in dictionary input for a non-nullable named tuple.
 - `Decimal256(S)` now resolves to the supported precision of 76 instead of 79. Explicit Decimal256 type names now produce valid Native insert headers, and SQLAlchemy Decimal256 types report the correct precision.
+- `query_np` now returns one row per result row when every column is returned as Python objects and some values are lists or tuples, for example a single `Array` or `Tuple` column. Previously numpy unpacked those values into extra dimensions, so `SELECT [number, number + 1, number + 2] FROM numbers(2)` came back with shape `(3, 2, 1)` instead of `(2, 1)`.
 
 ## 1.11.0, 2026-10-16
 
